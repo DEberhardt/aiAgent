@@ -26,16 +26,22 @@ You are a helpful AI coding agent.
 When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
 
 - List files and directories
+- Read file contents
+- Execute Python files with optional arguments
+- Write or overwrite files
 
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
 """
 
 # Importing function declarations
-from functions.get_files_info import schema_get_files_info
+from functions.get_files_info import *
 
 available_functions = types.Tool(
     function_declarations=[
         schema_get_files_info,
+        schema_get_file_content,
+        schema_write_file,
+        schema_run_python_file,
     ]
 )
 
@@ -49,9 +55,7 @@ config = types.GenerateContentConfig(
 model = "gemini-2.0-flash-001"
 
 # Sending request
-response = client.models.generate_content(
-    model=model, contents=messages, config=config
-)
+response = client.models.generate_content(model=model, contents=messages, config=config)
 
 # handling response
 if response.function_calls:
@@ -64,6 +68,5 @@ else:
 # handling verbose output
 if "--verbose" in sys.argv:
     print(f"User prompt: {question}")
-    # print(f"Calling function: {function_call_part.name}({function_call_part.args})")
     print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
     print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
