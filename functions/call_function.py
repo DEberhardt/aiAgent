@@ -1,5 +1,6 @@
 from functions.registry import function_declarations
 from google.genai import types
+from config import WORKING_DIR
 
 
 def call_function(function_call_part, verbose=False):
@@ -21,7 +22,7 @@ def call_function(function_call_part, verbose=False):
             ],
         )
 
-    args["working_directory"] = "./calculator"
+    args["working_directory"] = WORKING_DIR
     try:
         result = func(**args)
         return types.Content(
